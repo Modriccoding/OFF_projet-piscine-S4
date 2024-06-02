@@ -12,11 +12,12 @@ $is_user = isset($_SESSION['utilisateur_id']);
 $is_admin = isset($_SESSION['admin_id']);
 
 // Récupérer les notifications
-$query = "SELECT n.type, n.date, u.pseudo, a.photo, c.commentaire
+$query = "SELECT n.type, n.date, u.pseudo, a.photo, c.commentaire, e.titre AS job_title
           FROM notifications n
           LEFT JOIN utilisateurs u ON n.utilisateur_id = u.id
           LEFT JOIN albums a ON n.photo_id = a.id
           LEFT JOIN commentaires c ON n.commentaire_id = c.id
+          LEFT JOIN emplois e ON n.emplois_id = e.id
           ORDER BY n.date DESC";
 $result = $conn->query($query);
 
@@ -98,6 +99,11 @@ $result = $conn->query($query);
                     <p><?= htmlspecialchars($row['pseudo']) ?> a commenté une photo:</p>
                     <p>"<?= htmlspecialchars($row['commentaire']) ?>"</p>
                     <img src="<?= htmlspecialchars($row['photo']) ?>" alt="Photo" style="max-width: 100px;">
+                <?php elseif ($row['type'] == 'album'): ?>
+                    <p><?= htmlspecialchars($row['pseudo']) ?> a ajouté un nouvel album photo.</p>
+                    <img src="<?= htmlspecialchars($row['photo']) ?>" alt="Photo" style="max-width: 100px;">
+                <?php elseif ($row['type'] == 'job'): ?>
+                    <p><?= htmlspecialchars($row['pseudo']) ?> a publié une nouvelle offre d'emploi: <?= htmlspecialchars($row['job_title']) ?></p>
                 <?php endif; ?>
                 <small>Le <?= htmlspecialchars($row['date']) ?></small>
             </div>

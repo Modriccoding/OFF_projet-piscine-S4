@@ -147,7 +147,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_user'])) {
                         <td><?= htmlspecialchars($row['email']) ?></td>
                         <td><?= htmlspecialchars($row['nom']) ?></td>
                         <td><?= htmlspecialchars($row['bio']) ?></td>
-                        <td><img src="<?= htmlspecialchars($row['photo_profil']) ?>" alt="Photo de profil" style="width: 50px; height: 50px;"></td>
+                        <td>
+                            <?php if (!empty($row['photo_profil'])): ?>
+                                <img src="<?= htmlspecialchars($row['photo_profil']) ?>" alt="Photo de profil" style="width: 50px; height: 50px;">
+                            <?php else: ?>
+                                Pas de photo
+                            <?php endif; ?>
+                        </td>
                         <td>
                             <form method="post" action="admin_only.php" style="display:inline;">
                                 <input type="hidden" name="user_id" value="<?= $row['id'] ?>">

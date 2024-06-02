@@ -11,7 +11,7 @@ if (!isset($_SESSION['utilisateur_id']) && !isset($_SESSION['admin_id'])) {
 // Récupérer les informations de l'utilisateur ou de l'administrateur connecté
 if (isset($_SESSION['utilisateur_id'])) {
     $utilisateur_id = $_SESSION['utilisateur_id'];
-    $query_user = "SELECT pseudo, email, nom, bio, photo_profil, photo_mur FROM utilisateurs WHERE id = ?";
+    $query_user = "SELECT pseudo, email, nom, bio, photo_profil, photo_mur, formation, experiences FROM utilisateurs WHERE id = ?";
     $stmt_user = $conn->prepare($query_user);
     $stmt_user->bind_param("i", $utilisateur_id);
     $stmt_user->execute();
@@ -23,9 +23,11 @@ if (isset($_SESSION['utilisateur_id'])) {
     $bio = $utilisateur['bio'] ?? '';
     $photo_profil = $utilisateur['photo_profil'] ?? '';
     $photo_mur = $utilisateur['photo_mur'] ?? '';
+    $formation = $utilisateur['formation'] ?? '';
+    $experiences = $utilisateur['experiences'] ?? '';
 } elseif (isset($_SESSION['admin_id'])) {
     $admin_id = $_SESSION['admin_id'];
-    $query_admin = "SELECT pseudo, email, nom, bio, photo_profil, photo_mur FROM administrateurs WHERE id = ?";
+    $query_admin = "SELECT pseudo, email, nom, bio, photo_profil, photo_mur, formation, experiences FROM administrateurs WHERE id = ?";
     $stmt_admin = $conn->prepare($query_admin);
     $stmt_admin->bind_param("i", $admin_id);
     $stmt_admin->execute();
@@ -37,6 +39,8 @@ if (isset($_SESSION['utilisateur_id'])) {
     $bio = $admin['bio'] ?? '';
     $photo_profil = $admin['photo_profil'] ?? '';
     $photo_mur = $admin['photo_mur'] ?? '';
+    $formation = $admin['formation'] ?? '';
+    $experiences = $admin['experiences'] ?? '';
 }
 
 // Gérer la mise à jour des informations et le téléchargement de la photo de profil et de l'image du mur
@@ -45,18 +49,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
     $nom = $_POST['nom'];
     $bio = $_POST['bio'];
+    $formation = $_POST['formation'];
+    $experiences = $_POST['experiences'];
 
     if (isset($_SESSION['utilisateur_id'])) {
         // Mettre à jour les informations de l'utilisateur
-        $query_update = "UPDATE utilisateurs SET pseudo = ?, email = ?, nom = ?, bio = ? WHERE id = ?";
+        $query_update = "UPDATE utilisateurs SET pseudo = ?, email = ?, nom = ?, bio = ?, formation = ?, experiences = ? WHERE id = ?";
         $stmt_update = $conn->prepare($query_update);
-        $stmt_update->bind_param("ssssi", $pseudo, $email, $nom, $bio, $utilisateur_id);
+        $stmt_update->bind_param("ssssssi", $pseudo, $email, $nom, $bio, $formation, $experiences, $utilisateur_id);
         $stmt_update->execute();
     } elseif (isset($_SESSION['admin_id'])) {
         // Mettre à jour les informations de l'administrateur
-        $query_update = "UPDATE administrateurs SET pseudo = ?, email = ?, nom = ?, bio = ? WHERE id = ?";
+        $query_update = "UPDATE administrateurs SET pseudo = ?, email = ?, nom = ?, bio = ?, formation = ?, experiences = ? WHERE id = ?";
         $stmt_update = $conn->prepare($query_update);
-        $stmt_update->bind_param("ssssi", $pseudo, $email, $nom, $bio, $admin_id);
+        $stmt_update->bind_param("ssssssi", $pseudo, $email, $nom, $bio, $formation, $experiences, $admin_id);
         $stmt_update->execute();
     }
 
@@ -239,6 +245,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <textarea class="form-control" id="bio" name="bio" required><?= htmlspecialchars($bio) ?></textarea>
                 </div>
                 <div class="form-group">
+                    <label for="formation">Formation :</label>
+                    <textarea class="form-control" id="formation" name="formation" required><?= htmlspecialchars($formation) ?></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="experiences">Expériences :</label>
+                    <textarea class="form-control" id="experiences" name="experiences" required><?= htmlspecialchars($experiences) ?></textarea>
+                </div>
+                <div class="form-group">
                     <label for="photo_profil">Photo de Profil :</label>
                     <?php if ($photo_profil): ?>
                         <img src="<?= htmlspecialchars($photo_profil) ?>" alt="Photo de profil" class="profile-img">
@@ -286,10 +300,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <?php endwhile; ?>
             </div>
         </div>
+        <div class="mt-5">
+            <h2>Curriculum Vitae</h2>
+            <div>
+                <h3>Nom: <?= htmlspecialchars($nom) ?></h3>
+                <p><strong>Email:</strong> <?= htmlspecialchars($email) ?></p>
+                <p><strong>Bio:</strong> <?= htmlspecialchars($bio) ?></p>
+                <p><strong>Formation:</strong> <?= htmlspecialchars($formation) ?></p>
+                <p><strong>Expériences:</strong> <?= htmlspecialchars($experiences) ?></p>
+            </div>
+        </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.6.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
-

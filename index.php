@@ -88,6 +88,20 @@ $result = $stmt->get_result();
             padding: 10px;
             margin-bottom: 10px;
         }
+        .ece-info {
+            background-color: #fff;
+            color: #3b5998;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 40px;
+        }
+        .ece-info h3 {
+            margin-bottom: 20px;
+        }
+        .ece-info a {
+            color: #3b5998;
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -95,6 +109,9 @@ $result = $stmt->get_result();
         <a class="navbar-brand" href="index.php">
             <img src="LOGOfecebook.jpg" alt="Logo FECEBOOK">
         </a>
+        <div class="meta-logo">
+            <img src="meta.jpg" alt="Meta Logo" style="height: 20px; margin-left: 10px;">
+        </div>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -151,6 +168,21 @@ $result = $stmt->get_result();
                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
                 <span class="sr-only">Next</span>
             </a>
+        </div>
+
+        <!-- Section Histoire de l'ECE -->
+        <div class="text-center mb-5">
+            <h2>Histoire de l'ECE Paris</h2>
+            <p>
+                L'ECE Paris est une grande école d'ingénieurs généraliste fondée en 1919. 
+                Située au cœur de la capitale française, elle forme des ingénieurs dans 
+                les domaines des technologies de l'information, de l'électronique, des 
+                télécommunications et des systèmes embarqués. Avec un fort accent sur 
+                l'innovation et l'entrepreneuriat, l'ECE Paris prépare ses étudiants à 
+                relever les défis technologiques de demain.
+                <br>Contactez nous au 01 44 39 06 00, 
+                <br>10 Rue Sextius Michel, 75015 Paris
+            </p>
         </div>
 
         <h2>Fil d'actualité</h2>
@@ -229,6 +261,23 @@ $result = $stmt->get_result();
                     </div>
                 <?php endwhile; ?>
             </div>
+        </div>
+        
+        <!-- Section Informations ECE -->
+        <div class="ece-info mt-5">
+            <h3>Informations sur l'ECE Paris</h3>
+            <p>
+                Pour plus d'informations sur l'ECE Paris, visitez notre 
+                <a href="https://www.ece.fr/" target="_blank">site officiel</a>.
+            </p>
+            <p>
+                Adresse: 10 Rue Sextius Michel, 75015 Paris
+                <br>Téléphone: 01 44 39 06 00
+                <br>Email: contact@ece.fr
+            </p>
+            <p>
+                <a href="https://www.google.com/maps/place/ECE+-+Ecole+d'ing%C3%A9nieurs+de+la+Ville+de+Paris/@48.8493263,2.2903392,17z/data=!3m1!4b1!4m5!3m4!1s0x47e671d7d0b3d15d:0x5f478bc00f97d0ed!8m2!3d48.8493263!4d2.2925279" target="_blank">Voir sur Google Maps</a>
+            </p>
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
