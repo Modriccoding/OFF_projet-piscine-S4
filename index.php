@@ -13,7 +13,7 @@ $is_user = isset($_SESSION['utilisateur_id']);
 $utilisateur_id = $is_user ? $_SESSION['utilisateur_id'] : $_SESSION['admin_id'];
 
 // Récupérer les albums des amis de l'utilisateur ou de l'administrateur
-$query = "SELECT a.id as album_id, a.photo, u.pseudo, u.photo_profil,
+$query = "SELECT a.id as album_id, a.photo, a.legende, u.pseudo, u.photo_profil,
           (SELECT COUNT(*) FROM like_photo WHERE photo_id = a.id) as like_count,
           (SELECT COUNT(*) FROM like_photo WHERE photo_id = a.id AND utilisateur_id = ?) as user_liked
           FROM albums a
@@ -207,6 +207,12 @@ $result = $stmt->get_result();
                         </div>
                         <div class="comment-section">
                             <h5>Commentaires</h5>
+                            <?php if (!empty($row['legende'])): ?>
+                                <div class="comment">
+                                    <strong>Légende:</strong>
+                                    <p><?= htmlspecialchars($row['legende']) ?></p>
+                                </div>
+                            <?php endif; ?>
                             <?php
                             // Récupérer les commentaires pour cette photo
                             $query_comments = "SELECT c.commentaire, c.date_commentaire, u.pseudo 

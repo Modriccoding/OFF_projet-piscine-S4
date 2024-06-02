@@ -2,6 +2,11 @@
 session_start();
 include 'connexion.php';
 
+// Fonction pour gérer la sortie sécurisée
+function safe_output($data) {
+    return htmlspecialchars($data ?? '', ENT_QUOTES, 'UTF-8');
+}
+
 // Vérifiez si l'utilisateur ou l'administrateur est connecté
 if (!isset($_SESSION['utilisateur_id']) && !isset($_SESSION['admin_id'])) {
     header("Location: login.php");
@@ -215,7 +220,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
                     <span class="navbar-text">
-                        Connecté en tant que <?= htmlspecialchars($pseudo) ?>
+                        Connecté en tant que <?= safe_output($pseudo) ?>
                     </span>
                 </li>
                 <li class="nav-item">
@@ -230,39 +235,39 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <form action="vous.php" method="post" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="pseudo">Pseudo :</label>
-                    <input type="text" class="form-control" id="pseudo" name="pseudo" value="<?= htmlspecialchars($pseudo) ?>" required>
+                    <input type="text" class="form-control" id="pseudo" name="pseudo" value="<?= safe_output($pseudo) ?>" required>
                 </div>
                 <div class="form-group">
                     <label for="email">Email :</label>
-                    <input type="email" class="form-control" id="email" name="email" value="<?= htmlspecialchars($email) ?>" required>
+                    <input type="email" class="form-control" id="email" name="email" value="<?= safe_output($email) ?>" required>
                 </div>
                 <div class="form-group">
                     <label for="nom">Nom :</label>
-                    <input type="text" class="form-control" id="nom" name="nom" value="<?= htmlspecialchars($nom) ?>" required>
+                    <input type="text" class="form-control" id="nom" name="nom" value="<?= safe_output($nom) ?>" required>
                 </div>
                 <div class="form-group">
                     <label for="bio">Bio :</label>
-                    <textarea class="form-control" id="bio" name="bio" required><?= htmlspecialchars($bio) ?></textarea>
+                    <textarea class="form-control" id="bio" name="bio" required><?= safe_output($bio) ?></textarea>
                 </div>
                 <div class="form-group">
                     <label for="formation">Formation :</label>
-                    <textarea class="form-control" id="formation" name="formation" required><?= htmlspecialchars($formation) ?></textarea>
+                    <textarea class="form-control" id="formation" name="formation" required><?= safe_output($formation) ?></textarea>
                 </div>
                 <div class="form-group">
                     <label for="experiences">Expériences :</label>
-                    <textarea class="form-control" id="experiences" name="experiences" required><?= htmlspecialchars($experiences) ?></textarea>
+                    <textarea class="form-control" id="experiences" name="experiences" required><?= safe_output($experiences) ?></textarea>
                 </div>
                 <div class="form-group">
                     <label for="photo_profil">Photo de Profil :</label>
                     <?php if ($photo_profil): ?>
-                        <img src="<?= htmlspecialchars($photo_profil) ?>" alt="Photo de profil" class="profile-img">
+                        <img src="<?= safe_output($photo_profil) ?>" alt="Photo de profil" class="profile-img">
                     <?php endif; ?>
                     <input type="file" class="form-control-file" id="photo_profil" name="photo_profil">
                 </div>
                 <div class="form-group">
                     <label for="photo_mur">Image de Mur :</label>
                     <?php if ($photo_mur): ?>
-                        <img src="<?= htmlspecialchars($photo_mur) ?>" alt="Image de mur" class="wall-img">
+                        <img src="<?= safe_output($photo_mur) ?>" alt="Image de mur" class="wall-img">
                     <?php endif; ?>
                     <input type="file" class="form-control-file" id="photo_mur" name="photo_mur">
                 </div>
@@ -278,11 +283,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="album-photos d-flex flex-wrap">
                 <?php
                 if (isset($_SESSION['utilisateur_id'])) {
-                    $query_album = "SELECT id, photo FROM albums WHERE utilisateur_id = ?";
+                    $query_album = "SELECT id, photo, legende FROM albums WHERE utilisateur_id = ?";
                     $stmt_album = $conn->prepare($query_album);
                     $stmt_album->bind_param("i", $utilisateur_id);
                 } elseif (isset($_SESSION['admin_id'])) {
-                    $query_album = "SELECT id, photo FROM albums WHERE admin_id = ?";
+                    $query_album = "SELECT id, photo, legende FROM albums WHERE admin_id = ?";
                     $stmt_album = $conn->prepare($query_album);
                     $stmt_album->bind_param("i", $admin_id);
                 }
@@ -291,10 +296,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 while ($row = $result_album->fetch_assoc()):
                 ?>
                     <div class="position-relative">
-                        <img src="<?= htmlspecialchars($row['photo']) ?>" alt="Photo de l'album" class="album-img">
+                        <img src="<?= safe_output($row['photo']) ?>" alt="Photo de l'album" class="album-img">
                         <form class="delete-photo-form" action="delete_photo.php" method="post">
                             <input type="hidden" name="photo_id" value="<?= $row['id'] ?>">
                             <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                        </form>
+                        <form class="update-caption-form" action="update_legende.php" method="post">
+                            <input type="hidden" name="photo_id" value="<?= $row['id'] ?>">
+                            <input type="text" name="legende" value="<?= safe_output($row['legende']) ?>" placeholder="Ajouter une légende" class="form-control">
+                            <button type="submit" class="btn btn-primary btn-sm">Mettre à jour</button>
                         </form>
                     </div>
                 <?php endwhile; ?>
@@ -303,11 +313,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div class="mt-5">
             <h2>Curriculum Vitae</h2>
             <div>
-                <h3>Nom: <?= htmlspecialchars($nom) ?></h3>
-                <p><strong>Email:</strong> <?= htmlspecialchars($email) ?></p>
-                <p><strong>Bio:</strong> <?= htmlspecialchars($bio) ?></p>
-                <p><strong>Formation:</strong> <?= htmlspecialchars($formation) ?></p>
-                <p><strong>Expériences:</strong> <?= htmlspecialchars($experiences) ?></p>
+                <h3>Nom: <?= safe_output($nom) ?></h3>
+                <p><strong>Email:</strong> <?= safe_output($email) ?></p>
+                <p><strong>Bio:</strong> <?= safe_output($bio) ?></p>
+                <p><strong>Formation:</strong> <?= safe_output($formation) ?></p>
+                <p><strong>Expériences:</strong> <?= safe_output($experiences) ?></p>
             </div>
         </div>
     </div>
